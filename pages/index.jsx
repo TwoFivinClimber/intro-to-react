@@ -1,30 +1,36 @@
 import { useState } from 'react';
-      function Header({title}) {
-        return <h1>{`Cool ${title}`}</h1>;
-      }
+      
+function MyButton({ counter, onClick }) {
 
-      export default function HomePage() {
-        const names = ['Ada Lovelace', 'Grace Hopper', 'Margaret Hamilton'];
+  return (
+    <button onClick={onClick}>
+      Clicked {counter} times
+    </button>
+  );
+}
+export default function MyApp() {
 
-        const [likes, setLikes] = useState(0);
+  const [count, setCount] = useState(0);
+  const [number, setNumber] = useState(0);
 
-        function handleClick() {
-          setLikes(likes + 1)
-        }
+  function handleClick () {
+    setCount(count + 1);
+  }
 
-        return (
-          <div>
-          <Header title="Develop. Preview. Ship. 🚀" />
-          <ul>
-            {names.map((name) => (
-              <li key={name}>{name}</li>
-            ))}
-          </ul>
+  function otherHandle () {
+    setNumber(number + 1);
+  }
 
-          <button onClick={handleClick}>Like ({likes})</button>
-        </div>
-        );
-      }
+  return(
+    <div>
+    <h1>Buttons That Count</h1>
+    <MyButton counter={count} onClick={handleClick}/>
+    <MyButton counter={count} onClick={handleClick}/>
+    <MyButton counter={number} onClick={otherHandle}/>
+    </div>
+  );
+}
+
 
 
     
