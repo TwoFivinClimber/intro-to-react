@@ -46,7 +46,6 @@ function ProductTable({products, filterText, inStockOnly}) {
   //   );
   //   lastCategory = product.category;
   // });
-  
   // {
   //   'Fruits': [{}],
   //   'Vegetables': [{},...]
