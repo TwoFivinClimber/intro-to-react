@@ -1,5 +1,5 @@
-import {products} from "./products.json";
-import {useState} from 'react';
+import {products} from "../sampleData/products.json";
+import React, {useState} from 'react';
 
 function ProductCategoryRow({category}) {
   return (
@@ -24,27 +24,68 @@ function ProductRow({product}) {
 }
 
 function ProductTable({products, filterText, inStockOnly}) {
-  const rows = [];
-  let lastCategory = null;
+  // const rows = [];
+  // let lastCategory = null;
+  
+  // products.forEach((product) => {
+  //   if (product.name.toLowerCase().indexOf(filterText.toLowerCase()) === -1 ) {
+  //     // Entry
+  //     // Promise
+  //     return;
+  //   } 
+  //   if (inStockOnly && !product.stocked) {
+  //     return;
+  //   }
+  //   if (product.category !== lastCategory) {
+  //     rows.push(
+  //       <ProductCategoryRow category={product.category} key={product.category} />
+  //     );
+  //   }
+  //   rows.push(
+  //     <ProductRow product={product} key={product.name} />
+  //   );
+  //   lastCategory = product.category;
+  // });
+  
+  // {
+  //   'Fruits': [{}],
+  //   'Vegetables': [{},...]
+  // }
+  let productsGroupedByCategory = {};
 
-  products.forEach((product) => {
-    if (product.name.toLowerCase().indexOf(filterText.toLowerCase()) === -1 ) {
-      return;
-    } 
+  // with a for loop
+  for (let product of products) {
+    if (!productsGroupedByCategory[product.category]) {
+      productsGroupedByCategory[product.category] = [];
+    }
+
+    productsGroupedByCategory[product.category].push(product);
+  }
+
+  // same thing as above but with `Array.prototype.reduce` (check MDN)
+  // let productsWithReducer = products.reduce((accumulator, product) => {
+  //   if (!accumulator[product.category]) {
+  //     accumulator[product.category] = [];
+  //   }
+  //   accumulator[product.category].push(product);
+  //   return accumulator;
+  // }, {});
+
+
+  // debugger
+  function matchesFilters(product) {
+    const matchesSearch = (string, search) => {
+      return string.toLowerCase().indexOf(search.toLowerCase()) === -1
+    }
+
     if (inStockOnly && !product.stocked) {
-      return;
+      return false;
     }
-    if (product.category !== lastCategory) {
-      rows.push(
-        <ProductCategoryRow category={product.category} key={product.category} />
-      );
-    }
-    rows.push(
-      <ProductRow product={product} key={product.name} />
-    );
-    lastCategory = product.category;
-  });
 
+    return !matchesSearch(product.name, filterText);
+  }
+
+  // new way
   return (
     <table>
       <thead>
@@ -53,7 +94,46 @@ function ProductTable({products, filterText, inStockOnly}) {
           <th>Price</th>
         </tr>
       </thead>
-      <tbody>{rows}</tbody>
+      <tbody>
+        {/* {
+          Object.entries returns an array like:
+          [
+            ["Fruits", [{product}, {product}, {product}]],
+            ["Vegetables", [{product}, {product}, {product}]],
+          ]
+        } */}
+        {Object.entries(productsGroupedByCategory).map(([category, products]) => {
+          let filteredProducts = products.filter(matchesFilters);
+
+          if (!filteredProducts.length) {
+            return null;
+          }
+
+          return (
+            <React.Fragment key={category}>
+              <ProductCategoryRow category={category} />
+              {products.filter(matchesFilters).map(product => (
+                <ProductRow key={product.name} product={product}  />
+              ))}
+            </React.Fragment>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+
+  // old way
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows}
+      </tbody>
     </table>
   );
 }
